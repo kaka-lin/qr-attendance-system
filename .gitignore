@@ -9,3 +9,7 @@ venv/
 
 .DS_Store
 ._.DS_Store
+
+# cofing
+credentials.json
+config/dev.py

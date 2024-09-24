@@ -1,36 +1,40 @@
-import io
-import qrcode
+from generate_qrcode import QRCodeGenerator
+from google_sheet import GoogleSheetHelper
+
+from config.dev import config
 
 
-def generate_qr_code(name, email, output_file):
-    # 將姓名和信箱等資訊组合成字串
-    data = f"Name: {name}\nEmail: {email}"
-
-    # 創建 QR Code
-    #   - version: Controls the size of the QR code, 
-    #              from 1 to 40, 1: 21x21, 40: 177x177, or None for automatic
-    qr = qrcode.QRCode(
-        version=None,  # Controls the size of the QR code
-        error_correction=qrcode.constants.ERROR_CORRECT_L,  # Error correction level
-        box_size=10,  # Size of each box in pixels
-        border=4,  # Border size
-    )
+def main():
+    # 透過憑證連接 google sheet
+    service_file = config["google_sheet_key"]
+    url = config["google_sheet_url"]
+    gc = GoogleSheetHelper(service_file=service_file, url=url)
+    qrcode_generator = QRCodeGenerator()
     
-    # Add data to the QR code
-    qr.add_data(data)
-    qr.make(fit=True)
+    # 選取工作表
+    gc.select_worksheet_by_index(0)
 
-    # Generate the QR code image
-    img = qr.make_image(fill='black', back_color='white')
+    # 讀取全部資料
+    data = gc.read_all()
 
-    # 保存生成的 QR 码到文件
-    img.save(output_file)
-    print(f"QR code saved to {output_file}")
+    # 生成 QR Code
+    # 1. processing data: only need email, chinese_name, english_name
+    column_titles = data.columns.tolist()
+    item_list = [column_titles[1], column_titles[4], column_titles[5]]
+    qr_data_pd = data[item_list]
+
+    # 2. generate qr code
+    for index, row in qr_data_pd.iterrows():
+        email = row[column_titles[1]]
+        chinese_name = row[column_titles[4]]
+        english_name = row[column_titles[5]]
+        # print(index, email, chinese_name, english_name)
+        qr_data = f"Chinese Name: {chinese_name}\nEnglish Name: {english_name}\nEmail: {email}" 
+        output_file = f"{index+1}_{english_name}_qrcode.png"
+
+        # 生成 QR Code
+        qrcode_generator.generate(qr_data, output_file=output_file)
 
 
 if __name__ == "__main__":
-    name = "Kaka Lin"
-    email = "vn503024@gmail.com"
-    output_file = "qrcode_kaka.png"
-
-    generate_qr_code(name, email, output_file)
+    main()

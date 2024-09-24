@@ -4,7 +4,7 @@ import pandas as pd
 from config.dev import config
 
 
-class google_sheet_helper:
+class GoogleSheetHelper:
     def __init__(self, service_file, url):
         # authorization
         self.gc = pygsheets.authorize(service_file=service_file)

@@ -22,6 +22,7 @@ class QRCodeGenerator:
             return
         
         # Add data to the QR code
+        self.qr.clear()  # Clear the QR code data
         self.qr.add_data(data)
         self.qr.make(fit=True)
 

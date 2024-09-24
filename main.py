@@ -1,7 +1,7 @@
 from generate_qrcode import QRCodeGenerator
 from google_sheet import GoogleSheetHelper
 
-from config.dev import config
+from config import config
 
 
 def main():

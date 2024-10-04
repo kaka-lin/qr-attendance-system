@@ -1,7 +1,9 @@
+import os
+import sys
+
 import pygsheets
 import pandas as pd
-
-from config.dev import config
+from config import config
 
 
 class GoogleSheetHelper:

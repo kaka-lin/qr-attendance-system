@@ -1,6 +1,13 @@
-from generate_qrcode import QRCodeGenerator
-from google_sheet import GoogleSheetHelper
+import os
+import sys
+# insert root directory into python module search path
+root_path = os.getcwd()
+if root_path[-3:] == "src":
+    root_path = root_path[:-4]
+sys.path.insert(0, root_path)
 
+from app.generate_qrcode import QRCodeGenerator
+from app.google_sheet_helper import GoogleSheetHelper
 from config import config
 
 
@@ -16,7 +23,7 @@ def main():
 
     # 讀取全部資料
     data = gc.read_all()
-
+    
     # 生成 QR Code
     # 1. processing data: only need email, chinese_name, english_name
     column_titles = data.columns.tolist()
@@ -28,8 +35,8 @@ def main():
         email = row[column_titles[1]]
         chinese_name = row[column_titles[4]]
         english_name = row[column_titles[5]]
-        # print(index, email, chinese_name, english_name)
-        qr_data = f"Chinese Name: {chinese_name}\nEnglish Name: {english_name}\nEmail: {email}" 
+        # qr_data = '\n'.join(key + ": " + str(val) for key, val in row.items())
+        qr_data = f"姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
         output_file = f"{index+1}_{english_name}_qrcode.png"
 
         # 生成 QR Code

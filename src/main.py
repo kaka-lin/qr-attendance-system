@@ -1,47 +1,27 @@
 import os
 import sys
-# insert root directory into python module search path
-root_path = os.getcwd()
-if root_path[-3:] == "src":
-    root_path = root_path[:-4]
-sys.path.insert(0, root_path)
+from PyQt5.QtCore import QCoreApplication, QUrl, Qt
+from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtQml import QQmlApplicationEngine, QQmlContext
 
-from app.generate_qrcode import QRCodeGenerator
-from app.google_sheet_helper import GoogleSheetHelper
-from config import config
+from src.threads.manage_threads import ManageThreads
+from src import qml, components
 
 
-def main():
-    # 透過憑證連接 google sheet
-    service_file = config["google_sheet_key"]
-    url = config["google_sheet_url"]
-    gc = GoogleSheetHelper(service_file=service_file, url=url)
-    qrcode_generator = QRCodeGenerator()
-    
-    # 選取工作表
-    gc.select_worksheet_by_index(0)
+def run(app, pwd, mode):
+    # Create QML engine
+    engine = QQmlApplicationEngine()
+    context = engine.rootContext()
 
-    # 讀取全部資料
-    data = gc.read_all()
-    
-    # 生成 QR Code
-    # 1. processing data: only need email, chinese_name, english_name
-    column_titles = data.columns.tolist()
-    item_list = [column_titles[1], column_titles[4], column_titles[5]]
-    qr_data_pd = data[item_list]
+    qr_manage = ManageThreads()
+    context.setContextProperty("qrcode", qr_manage)
 
-    # 2. generate qr code
-    for index, row in qr_data_pd.iterrows():
-        email = row[column_titles[1]]
-        chinese_name = row[column_titles[4]]
-        english_name = row[column_titles[5]]
-        # qr_data = '\n'.join(key + ": " + str(val) for key, val in row.items())
-        qr_data = f"姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
-        output_file = f"{index+1}_{english_name}_qrcode.png"
+    if mode == "prod":
+        engine.addImportPath('qrc:///resources')
+        engine.load(QUrl('qrc:/resources/main.qml'))
+    else:
+        engine.addImportPath(os.path.join(pwd, "src/resources"))
+        engine.load(QUrl(os.path.join(pwd, "src/resources/main.qml")))
 
-        # 生成 QR Code
-        qrcode_generator.generate(qr_data, output_file=output_file)
-
-
-if __name__ == "__main__":
-    main()
+    engine.quit.connect(app.quit)
+    sys.exit(app.exec_())

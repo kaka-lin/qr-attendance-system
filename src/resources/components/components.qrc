@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/resources/components">
+        <file>GenQRCode.qml</file>
+        <file>common/qmldir</file>
+    </qresource>
+</RCC>

@@ -1,2 +1,3 @@
 qrcode
 pygsheets
+PyQt5==5.15.10

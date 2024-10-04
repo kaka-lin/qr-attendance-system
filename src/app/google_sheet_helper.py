@@ -1,5 +1,7 @@
 import os
 import sys
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(ROOT_DIR)
 
 import pygsheets
 import pandas as pd
@@ -9,8 +11,8 @@ from config import config
 class GoogleSheetHelper:
     def __init__(self, service_file, url):
         # authorization
-        self.gc = pygsheets.authorize(service_file=service_file)
-        self.sht = self.gc.open_by_url(url)
+        self.gs = pygsheets.authorize(service_file=service_file)
+        self.sht = self.gs.open_by_url(url)
         
         # 讀取全部工作表
         self.wks_list = self.sht.worksheets()
@@ -38,10 +40,10 @@ if __name__ == "__main__":
     # 透過憑證連接 google sheet
     service_file = config["google_sheet_key"]
     url = config["google_sheet_url"]
-    gc = google_sheet_helper(service_file=service_file, url=url)
+    gs = GoogleSheetHelper(service_file=service_file, url=url)
    
     # 選取工作表
-    gc.select_worksheet_by_index(0)
+    gs.select_worksheet_by_index(0)
 
     # 讀取全部資料
-    print(gc.read_all())
+    print(gs.read_all())

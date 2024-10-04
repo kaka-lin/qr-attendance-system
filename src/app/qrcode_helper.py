@@ -4,7 +4,7 @@ import uuid
 import qrcode
 
 
-class QRCodeGenerator:
+class QRCodeHelper:
     def __init__(self, 
                  version=None, 
                  error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -20,7 +20,7 @@ class QRCodeGenerator:
             border=border,  # Border size
         )
     
-    def generate(self, data, output_dir="images", output_file="qrcode.png"):
+    def generate(self, data, output_file="qrcode.png", output_dir="images"):
         if data is None or data == "":
             return
 
@@ -44,6 +44,7 @@ class QRCodeGenerator:
         image_path = os.path.join(output_dir, output_file)
         img.save(image_path)
         print(f"QR code saved to {image_path}")
+        return image_path
 
 
 if __name__ == "__main__":
@@ -56,5 +57,5 @@ if __name__ == "__main__":
     data = f"Name: {name}\nEmail: {email}"
 
     # 生成 QR Code
-    qrcode_generator = QRCodeGenerator()
-    qrcode_generator.generate(data)
+    qrcode_generator = QRCodeHelper()
+    qrcode_generator.generate(data, output_file=output_file)

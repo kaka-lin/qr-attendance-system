@@ -4,15 +4,12 @@
         <file>resources/GenerateTab.qml</file>
         <file>resources/ScanTab.qml</file>
 
-        <file>resources/pages/QRcodePage.qml</file>
+        <file>resources/pages/EmailPage.qml</file>
 
         <file>resources/images/about.ico</file>
         <file>resources/images/exit.ico</file>
         <file>resources/images/newFile.ico</file>
 
-        <file>resources/js/candump.js</file>
-        <file>resources/js/cellVoltage.js</file>
-        <file>resources/js/rtc.js</file>
-        <file>resources/js/updateBmsData.js</file>
+        <file>resources/js/datadump.js</file>
     </qresource>
 </RCC>

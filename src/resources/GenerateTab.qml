@@ -1,4 +1,4 @@
-import QtQuick 2.8
+import QtQuick 2.12
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 
@@ -12,10 +12,14 @@ Page {
     header: TabBar {
         id: bar
         width: parent.width
-        currentIndex: view.currentIndex
+        currentIndex: 1
 
         TabButton {
-            text: qsTr("QR Code generator")
+            text: qsTr("EMAIL")
+        }
+
+        TabButton {
+            text: qsTr("GOOGLE SHEET")
         }
     }
 
@@ -24,8 +28,12 @@ Page {
         anchors.fill: parent
         currentIndex: bar.currentIndex
 
-        QRCodePage {
-            id: qrcodePage
+        EmailPage {
+            id: emailPage
+        }
+
+        GoogleSheetPage {
+            id: googleSheetPage
         }
     }
 }

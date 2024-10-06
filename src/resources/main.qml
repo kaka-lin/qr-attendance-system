@@ -1,22 +1,17 @@
-import QtQuick 2.8
+import QtQuick 2.12
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
-import QtQuick.Controls.Material 2.0
-import QtQuick.Controls.Universal 2.0
-import Qt.labs.settings 1.0 // QSettings的QML版本,只適合保存簡單的key-value
-import QtQuick.Window 2.2
-import QtQuick.Dialogs 1.2
-import QtGraphicalEffects 1.0 // DropShadow
+import QtQuick.Dialogs 1.2 // FileDialog
 
 import components.common 1.0
 
 ApplicationWindow {
     id: window
     visible: true
-    minimumWidth: 640
+    minimumWidth: 800
     minimumHeight: 600
 
-    title: qsTr("Fara M11 Module Tool")
+    title: qsTr("QRCode Generator and Scanner Tool")
 
     property real dpi: Screen.pixelDensity.toFixed(2)
 

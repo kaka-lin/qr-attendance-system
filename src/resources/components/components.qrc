@@ -1,6 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/resources/components">
-        <file>GenQRCode.qml</file>
         <file>common/qmldir</file>
+        <file>GenQRCode.qml</file>
+        <file>GenQRCodeAdvanced.qml</file>
+        <file>GoogleSheetDump.qml</file>
     </qresource>
 </RCC>

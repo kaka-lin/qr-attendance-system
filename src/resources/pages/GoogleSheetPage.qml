@@ -5,9 +5,8 @@ import components 1.0
 
 Rectangle {
     id: root
-    property string current_module: ""
 
-    GenQRCode {
-        current_module: root.current_module
+    GenQRCodeAdvanced {
+        id: genQRCodeAdvanced
     }
 }

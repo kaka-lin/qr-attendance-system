@@ -1,3 +1,5 @@
 module components
 
-GenQRCode      1.0 GenQRCode.qml
+GenQRCode         1.0 GenQRCode.qml # basic component: generate qrcode with email
+GenQRCodeAdvanced 1.0 GenQRCodeAdvanced.qml # advanced component: generate qr code with google sheet 
+GoogleSheetDump   1.0 GoogleSheetDump.qml # google sheet component

@@ -1,4 +1,4 @@
-import QtQuick 2.8
+import QtQuick 2.12
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
@@ -8,9 +8,6 @@ import components.common 1.0
 Rectangle {
     id: root
     anchors.fill: parent
-
-    property real current_percent: 0.0
-    property string current_module: ""
 
     Column {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -81,14 +78,14 @@ Rectangle {
                 onClicked: {
                     var data = emailFileText.text;
 
-                    qrcode.generate(data, "", "");
+                    manage.qrcode_generate(data, "", "");
                 }
             }
         }
     }
 
     Connections {
-        target: qrcode
+        target: manage
 
         function onQrcodeGenMsg(genMsg) {
             var image_path = genMsg;

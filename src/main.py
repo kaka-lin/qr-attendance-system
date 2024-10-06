@@ -13,8 +13,8 @@ def run(app, pwd, mode):
     engine = QQmlApplicationEngine()
     context = engine.rootContext()
 
-    qr_manage = ManageThreads()
-    context.setContextProperty("qrcode", qr_manage)
+    manage = ManageThreads()
+    context.setContextProperty("manage", manage)
 
     if mode == "prod":
         engine.addImportPath('qrc:///resources')

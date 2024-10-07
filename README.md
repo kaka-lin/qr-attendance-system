@@ -50,7 +50,7 @@ if you want to packing Python programs into stand-alone executables
     - [x] Only Email
     - [x] Google Sheet
   - [ ] 使用 GUI 掃描 QRCode
-    - [ ] 掃描 QRCode 並顯示資料
+    - [x] 掃描 QRCode 並顯示資料
     - [ ] QRCode 顯示已經掃過
 
 ## Issues

@@ -49,30 +49,26 @@ class QRCodeHelper:
         print(f"QR code saved to {image_path}")
         return image_path
     
-    def decode(self, image_path):
-        # Load the QR code image
-        image = cv2.imread(image_path)
-        if image is None:
-            print(f"Unable to open image: {image_path}")
-            return None
-        
+    def decode(self, image):
         # Using pyzbar to decode the QR code image
         decoded_objects = pyzbar.decode(image)
-        for obj in decoded_objects:
-            qr_type = obj.type
-            qr_data = obj.data.decode('utf-8')
-        
-            print(f"Type: {qr_type}")
-            print(f"Data: {qr_data}")
+    
+        # if no QR code is detected
+        if not decoded_objects:
+            print("No QR code detected")
+        else:
+            # Loop over the detected QR codes
+            for obj in decoded_objects:
+                qr_type = obj.type
+                qr_data = obj.data.decode('utf-8')
+            
+                print(f"Type: {qr_type}")
+                print(f"Data: {qr_data}")
 
-            # 在圖像上繪製邊框
-            (x, y, w, h) = obj.rect
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        
-        # 顯示帶有 QR Code 的影像
-        plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-        plt.show()
-        return qr_data
+                # 在圖像上繪製邊框
+                (x, y, w, h) = obj.rect
+                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        return image
 
 
 if __name__ == "__main__":
@@ -89,4 +85,11 @@ if __name__ == "__main__":
     qrcode_generator.generate(data, output_file=output_file)
 
     # 解碼 QR Code
-    qr_data = qrcode_generator.decode(os.path.join(output_dir, output_file))
+    # Load the QR code image
+    image_path = os.path.join(output_dir, output_file)
+    qr_image = cv2.imread(image_path)
+    decoded_image = qrcode_generator.decode(qr_image)
+
+    # Display the decoded image
+    plt.imshow(cv2.cvtColor(decoded_image, cv2.COLOR_BGR2RGB))
+    plt.show()

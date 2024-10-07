@@ -1,10 +1,12 @@
 import os
 
+import numpy as np
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, pyqtProperty, pyqtSignal, pyqtSlot, QVariant
 
 from src.threads.qrcode_thread import QRCodeThread
 from src.threads.google_sheet_thread import GoogleSheetThread
+from src.threads.video_thread import VideoThread
 
 ROOT_DIR = os.getcwd()
 
@@ -15,6 +17,9 @@ class ManageThreads(QObject):
     dumpSig = pyqtSignal(str, str, str, arguments=[
                          'id', 'name', 'email'])
     dumpInit = pyqtSignal()
+
+    frameReady = pyqtSignal(np.ndarray)
+    finished = pyqtSignal()
 
     def __init__(self, parent=None):
         super(ManageThreads, self).__init__(parent)
@@ -69,3 +74,27 @@ class ManageThreads(QObject):
             thread.quit()
             thread.wait()
         print("Dump Thread Finished")
+    
+    ############################################################################################################
+    # The following methods are used to scan the QR code
+    @pyqtSlot()
+    def startVideo(self):
+        worker = VideoThread()
+        thread = QtCore.QThread(self)
+        self.__thread_maps['start_video'] = [thread, worker]
+        worker.moveToThread(thread)
+
+        worker.frameReady.connect(self.frameReady)
+        worker.framefinished.connect(self.framefinished)
+
+        thread.started.connect(worker.start)
+        thread.start()
+
+    @pyqtSlot()
+    def framefinished(self):
+        if 'start_video' in self.__thread_maps:
+            thread, worker = self.__thread_maps['start_video']
+            worker.stopVideo()
+            thread.quit()
+            thread.wait()
+        print("Video Thread Finished")

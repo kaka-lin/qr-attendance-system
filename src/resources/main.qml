@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2 // FileDialog
+import QtQuick.Window 2.2 // Screen
 
 import components.common 1.0
 
@@ -115,16 +116,10 @@ ApplicationWindow {
 
         TabButton {
             text: qsTr("Generate QR Code")
-            onClicked: {
-                generateTab.tabActivated(false);
-            }
         }
 
         TabButton {
             text: qsTr("Scan QR Code")
-            onClicked: {
-                scanTab.tabActivated(true);
-            }
         } 
     }
 

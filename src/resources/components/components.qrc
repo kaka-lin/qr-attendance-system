@@ -4,5 +4,6 @@
         <file>GenQRCode.qml</file>
         <file>GenQRCodeAdvanced.qml</file>
         <file>GoogleSheetDump.qml</file>
+        <file>ScanQRCode.qml</file>
     </qresource>
 </RCC>

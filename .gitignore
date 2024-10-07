@@ -16,3 +16,7 @@ config/dev.py
 
 # QR code
 images/
+
+# data
+*.csv
+*.xlsx

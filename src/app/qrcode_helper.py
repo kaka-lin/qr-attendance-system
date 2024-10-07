@@ -27,12 +27,6 @@ class QRCodeHelper:
         if data is None or data == "":
             return
 
-        # generate unique id
-        unique_id = str(uuid.uuid4())
-        # Add unique data (Assume it points to some URL) to the data
-        unique_data = f"http://example.com/scan/{unique_id}"
-        data = f"{data}\nunique_id: {unique_data}"
-
         # Add data to the QR code
         self.qr.clear()  # Clear the QR code data
         self.qr.add_data(data)

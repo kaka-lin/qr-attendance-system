@@ -46,4 +46,13 @@ if __name__ == "__main__":
     gs.select_worksheet_by_index(0)
 
     # 讀取全部資料
-    print(gs.read_all())
+    data = gs.read_all()
+    print(data)
+
+    # 遍歷資料
+    # column_titles = data.columns.tolist()
+    # processing data: only need email, chinese_name, english_name
+    # item_list = [column_titles[1], column_titles[4], column_titles[5]]
+    # qr_data_pd = data[item_list]
+
+    # print(qr_data_pd)

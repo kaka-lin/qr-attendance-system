@@ -3,3 +3,4 @@ pygsheets
 PyQt5==5.15.10
 opencv-python
 pyzbar
+openpyxl

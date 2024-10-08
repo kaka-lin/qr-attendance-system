@@ -20,9 +20,10 @@ class ManageThreads(QObject):
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, db, parent=None):
         super(ManageThreads, self).__init__(parent)
 
+        self.db = db
         self.__thread_maps = {}
 
     @pyqtSlot(str, str, str)
@@ -56,7 +57,7 @@ class ManageThreads(QObject):
     def genQRCodeSheet(self, service_file, url):
         self.sheetDumpInit.emit()
         
-        worker = GoogleSheetThread(service_file, url)
+        worker = GoogleSheetThread(service_file, url, self.db)
         thread = QtCore.QThread(self)
         self.__thread_maps['generate_qrcode_sheet'] = [thread, worker]
         worker.moveToThread(thread)

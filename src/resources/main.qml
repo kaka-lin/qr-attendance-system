@@ -10,7 +10,7 @@ ApplicationWindow {
     id: window
     visible: true
     minimumWidth: 800
-    minimumHeight: 600
+    minimumHeight: 720
 
     title: qsTr("QRCode Generator and Scanner Tool")
 

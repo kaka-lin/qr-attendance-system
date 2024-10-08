@@ -36,7 +36,7 @@ Rectangle {
             }
 
             TextField {
-                id: gsKeyFileText
+                id: gsKeyTextField
                 placeholderText: qsTr("Credentials.json")
                 Layout.preferredWidth: 300
 
@@ -64,7 +64,7 @@ Rectangle {
             }
 
             TextField {
-                id: gsURLText
+                id: gsURLTextField
                 placeholderText: qsTr("https://docs.google.com/spreadsheets/d/試算表ID/edit")
                 Layout.preferredWidth: 500
 
@@ -73,12 +73,80 @@ Rectangle {
                 Layout.columnSpan: 2
             }
 
-            // row 2
+            // row 3
+            Label {
+                text: "MongDB - DBName:"
+
+                Layout.row: 2
+                Layout.column: 0
+            }
+
+            TextField {
+                id: dbNameTextField
+                text: "halloween"
+                placeholderText: qsTr("test_database")
+                Layout.preferredWidth: 300
+                readOnly: true
+
+                Layout.row: 2
+                Layout.column: 1
+            }
+
+            Button {
+                id : connectDBButton
+                text: "Connect Database"
+                enabled: true
+
+                Layout.row: 2
+                Layout.column: 2
+
+                onClicked: {
+                    var db_name = dbNameTextField.text;
+                    var collection_name = collectionTextField.text;
+                    db.choose_collection(db_name, collection_name);
+                    connectDBButton.enabled = false;
+                    disConnectDBButton.enabled = true;
+                }
+            }
+
+            // row 4
+            Label {
+                text: "MongDB - Collections:"
+
+                Layout.row: 3
+                Layout.column: 0
+            }
+
+            TextField {
+                id: collectionTextField
+                text: "Users"
+                placeholderText: qsTr("test_collection")
+                Layout.preferredWidth: 300
+                readOnly: true
+
+                Layout.row: 3
+                Layout.column: 1
+            }
+
+            Button {
+                id : disConnectDBButton
+                text: "Disconnect Database"
+                enabled: false
+
+                Layout.row: 3
+                Layout.column: 2
+
+                onClicked: {
+                    connectDBButton.enabled = true;
+                }
+            }
+
+            // row 5
             Rectangle {
                 width: 600
                 height: 300
 
-                Layout.row: 2
+                Layout.row: 4
                 Layout.column: 0
                 Layout.columnSpan: 2
 
@@ -91,17 +159,17 @@ Rectangle {
                 id: row
                 spacing: 10
 
-                Layout.row: 2
+                Layout.row: 4
                 Layout.column: 2
 
                 Button {
                     id: genQRCodeSheetButton
                     text: "generate_code_sheet"
-                    enabled: gsKeyFileText.text !== "" && gsURLText.text !== "" ? true : false
+                    enabled: gsKeyTextField.text !== "" && gsURLTextField.text !== "" && !connectDBButton.enabled ? true : false
 
                     onClicked: {
-                        var service_file = gsKeyFileText.text;
-                        var sheet_url = gsURLText.text;
+                        var service_file = gsKeyTextField.text;
+                        var sheet_url = gsURLTextField.text;
                         manage.genQRCodeSheet(service_file, sheet_url);
                     }
                 }
@@ -118,9 +186,9 @@ Rectangle {
         onAccepted: {
            var filepath = new String(fileUrl);
            if (Qt.platform.os == "windows") {
-               gsKeyFileText.text = filepath.slice(8);
+               gsKeyTextField.text = filepath.slice(8);
            } else {
-               gsKeyFileText.text = filepath.slice(7);
+               gsKeyTextField.text = filepath.slice(7);
            }
         }
     }

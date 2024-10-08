@@ -15,11 +15,18 @@ def run(app, pwd, mode):
     engine = QQmlApplicationEngine()
     context = engine.rootContext()
 
-    manage = ManageThreads()
+    # mongoDB
+    uri = os.environ["MONGO_URI"]
+    mongo_controller = MongoController(uri)
+    mongo_controller.connect()
+    # manage threads
+    manage = ManageThreads(mongo_controller)
     # manage is backend of MyMediaPlayer for choose video source
     player = MyMediaPlayer(manage)
+
     context.setContextProperty("manage", manage)
     context.setContextProperty("player", player)
+    context.setContextProperty("db", mongo_controller)
 
     if mode == "prod":
         engine.addImportPath('qrc:///resources')
@@ -27,6 +34,9 @@ def run(app, pwd, mode):
     else:
         engine.addImportPath(os.path.join(pwd, "src/resources"))
         engine.load(QUrl(os.path.join(pwd, "src/resources/main.qml")))
+
+    # Connect the app's quit signal to MongoController's close method
+    app.aboutToQuit.connect(mongo_controller.close)
 
     engine.quit.connect(app.quit)
     sys.exit(app.exec_())

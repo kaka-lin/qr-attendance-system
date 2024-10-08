@@ -14,19 +14,13 @@ class GoogleSheetThread(QObject):
         'id', 'chinese_name', 'english_name', 'email'])
     genQRCodeSheetDone = pyqtSignal()
 
-    def __init__(self, service_file, url, parent=None):
+    def __init__(self, service_file, url, db, parent=None):
         super(GoogleSheetThread, self).__init__(parent)
 
         # initialize GoogleSheetHelper
         self.gs = GoogleSheetHelper(service_file=service_file, url=url)
         self.qrcode_generator = QRCodeHelper()
-
-        self.mongo_uri = os.environ["MONGO_URI"]
-        self.db_name = "halloween"
-        self.collection_name = "Users"
-        self.mongo_controller = MongoController(
-            self.mongo_uri, self.db_name, self.collection_name)
-        self.mongo_controller.connect()
+        self.db = db
 
         self.output_dir = os.environ["ROOT_DIR"] + "/images"
 
@@ -48,7 +42,8 @@ class GoogleSheetThread(QObject):
         qr_data_pd.loc[:, 'scanned'] = False
 
         # 3. Save the data to MongoDB
-        self.mongo_controller.create_many(qr_data_pd.to_dict(orient='records'))
+        qr_data_dict = qr_data_pd.to_dict(orient='records')
+        self.db.create_many(qr_data_dict)
 
         # generate qr code and emit signal to update UI
         for index, row in qr_data_pd.iterrows():

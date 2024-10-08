@@ -1,6 +1,7 @@
 import os
 
 config = {
-    "google_sheet_key": os.getenv("GOOGLE_SHEET_KEY"),
-    "google_sheet_url": os.getenv("GOOGLE_SHEET_URL"),
+    "GOOGLE_SHEET_KEY": os.getenv("GOOGLE_SHEET_KEY"),
+    "GOOGLE_SHEET_URL": os.getenv("GOOGLE_SHEET_URL"),
+    "MONGO_URI": os.getenv("MONGODB_URI")
 }

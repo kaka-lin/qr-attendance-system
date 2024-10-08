@@ -4,7 +4,7 @@ WorkerScript.onMessage = function(msg) {
         msg.model.clear();
         msg.model.sync();
     } else {
-        var data = {'id': msg.id, 'name': msg.name, 'email': msg.email};
+        var data = {'id': msg.id, 'chinese_name': msg.chinese_name, 'english_name': msg.english_name, 'email': msg.email};
         
         msg.model.append(data);
         msg.model.sync();

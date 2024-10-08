@@ -38,8 +38,8 @@ class GoogleSheetHelper:
 
 if __name__ == "__main__":
     # 透過憑證連接 google sheet
-    service_file = config["google_sheet_key"]
-    url = config["google_sheet_url"]
+    service_file = config["GOOGLE_SHEET_KEY"]
+    url = config["GOOGLE_SHEET_URL"]
     gs = GoogleSheetHelper(service_file=service_file, url=url)
    
     # 選取工作表

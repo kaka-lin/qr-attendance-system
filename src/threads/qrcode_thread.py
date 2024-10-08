@@ -7,8 +7,8 @@ from src.app.qrcode_helper import QRCodeHelper
 
 
 class QRCodeThread(QObject):
-    qrcodeGenMsg = pyqtSignal(str)
-    qrcodeGenDone = pyqtSignal()
+    genQRCodeSig = pyqtSignal(str)
+    genQRCodeDone = pyqtSignal()
 
     def __init__(self, parent=None):
         super(QRCodeThread, self).__init__(parent)
@@ -20,5 +20,5 @@ class QRCodeThread(QObject):
         """ Generate QRCode Thread Start """
         print("Generate QRCode Thread Start")
         image_path = self.qrcode.generate(data, output_file=output_file, output_dir=output_dir)
-        self.qrcodeGenMsg.emit(image_path)
-        self.qrcodeGenDone.emit()
+        self.genQRCodeSig.emit(image_path)
+        self.genQRCodeDone.emit()

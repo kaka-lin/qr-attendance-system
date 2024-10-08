@@ -5,7 +5,9 @@ import sys
 import platform
 
 from PyQt5.QtGui import QGuiApplication
+
 from src import main
+from config import config
 
 
 if __name__ == "__main__":
@@ -21,6 +23,10 @@ if __name__ == "__main__":
     else:
         # running live
         pwd = os.path.dirname(os.path.abspath(__file__))
+
+    # Environment variables
+    os.environ["ROOT_DIR"] = os.getcwd()
+    os.environ["MONGO_URI"] = config["MONGO_URI"]
 
     # OS
     if platform.system() == 'Linux':

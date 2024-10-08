@@ -8,15 +8,14 @@ from src.threads.qrcode_thread import QRCodeThread
 from src.threads.google_sheet_thread import GoogleSheetThread
 from src.threads.video_thread import VideoThread
 
-ROOT_DIR = os.getcwd()
-
 
 class ManageThreads(QObject):
-    qrcodeGenMsg = pyqtSignal(str, arguments=['genMsg'])
+    genQRCodeSig = pyqtSignal(str, arguments=['image_path'])
 
-    dumpSig = pyqtSignal(str, str, str, arguments=[
-                         'id', 'name', 'email'])
-    dumpInit = pyqtSignal()
+    sheetDumpInit = pyqtSignal()
+    sheetDumpSig = pyqtSignal(str, str, str, str, arguments=[
+        'id', 'chinese_name', 'english_name', 'email'])
+    genQRCodeSheetDone = pyqtSignal()
 
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal()
@@ -27,53 +26,54 @@ class ManageThreads(QObject):
         self.__thread_maps = {}
 
     @pyqtSlot(str, str, str)
-    def qrcode_generate(self, data, output_file, output_dir):
+    def genQRCode(self, data, output_file, output_dir):
         if not output_file:
             output_file = "qrcode.png"
         if not output_dir:
-            output_dir = os.path.join(ROOT_DIR, "images")
+            root_path = os.environ["ROOT_DIR"]
+            output_dir = os.path.join(root_path, "images")
         
         worker = QRCodeThread()
         thread = QtCore.QThread(self)
-        self.__thread_maps['qrcode_generate'] = [thread, worker]
+        self.__thread_maps['generate_qrcode'] = [thread, worker]
         worker.moveToThread(thread)
 
-        worker.qrcodeGenMsg.connect(self.qrcodeGenMsg)
-        worker.qrcodeGenDone.connect(self.onGenDone)
+        worker.genQRCodeSig.connect(self.genQRCodeSig)
+        worker.genQRCodeDone.connect(self.onGenQRCodeDone)
 
         thread.started.connect(lambda: worker.generate(data, output_file, output_dir))
         thread.start()
     
     @pyqtSlot()
-    def onGenDone(self):
-        if 'qrcode_generate' in self.__thread_maps:
-            thread, worker = self.__thread_maps['qrcode_generate']
+    def onGenQRCodeDone(self):
+        if 'generate_qrcode' in self.__thread_maps:
+            thread, worker = self.__thread_maps['generate_qrcode']
             thread.quit()
             thread.wait()
         print("Generate QRCode Thread Finish")
-
+    
     @pyqtSlot(str, str)
-    def get_sheet_data(self, service_file, url):
-        self.dumpInit.emit()
+    def genQRCodeSheet(self, service_file, url):
+        self.sheetDumpInit.emit()
         
         worker = GoogleSheetThread(service_file, url)
         thread = QtCore.QThread(self)
-        self.__thread_maps['get_sheet_data'] = [thread, worker]
+        self.__thread_maps['generate_qrcode_sheet'] = [thread, worker]
         worker.moveToThread(thread)
 
-        worker.dumpSig.connect(self.dumpSig)
-        worker.dumpDone.connect(self.dumpDone)
+        worker.sheetDumpSig.connect(self.sheetDumpSig)
+        worker.genQRCodeSheetDone.connect(self.onGenQRCodeSheetDone)
 
-        thread.started.connect(lambda: worker.get_all_data(0))
+        thread.started.connect(lambda: worker.generate_code_sheet(0))
         thread.start()
-
+    
     @pyqtSlot()
-    def dumpDone(self):
-        if 'get_sheet_data' in self.__thread_maps:
-            thread, worker = self.__thread_maps['get_sheet_data']
+    def onGenQRCodeSheetDone(self):
+        if 'generate_qrcode_sheet' in self.__thread_maps:
+            thread, worker = self.__thread_maps['generate_qrcode_sheet']
             thread.quit()
             thread.wait()
-        print("Dump Thread Finished")
+        print("Generate QRCode With Sheets Thread Done")
     
     ############################################################################################################
     # The following methods are used to scan the QR code

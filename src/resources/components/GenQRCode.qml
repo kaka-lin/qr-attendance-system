@@ -78,7 +78,7 @@ Rectangle {
                 onClicked: {
                     var data = emailFileText.text;
 
-                    manage.qrcode_generate(data, "", "");
+                    manage.genQRCode(data, "", "");
                 }
             }
         }
@@ -87,8 +87,7 @@ Rectangle {
     Connections {
         target: manage
 
-        function onQrcodeGenMsg(genMsg) {
-            var image_path = genMsg;
+        function onGenQRCodeSig(image_path) {
             qrcodeImage.source = image_path;
         }
     }

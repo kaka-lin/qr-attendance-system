@@ -7,8 +7,6 @@ Rectangle {
     // color: parent.color  // 背景顏色
     anchors.fill: parent
 
-    signal sendDataToGenQRCode(var data)
-
     property var normalG: Gradient {
         GradientStop { position: 0.0; color: "#fff" }
         GradientStop { position: 1.0; color: "#eee" }
@@ -60,7 +58,7 @@ Rectangle {
         }
 
         TableViewColumn {
-            id: dlcColumn
+            id: idColumn
             title: "序號"
             role: "id"
             movable: false
@@ -78,12 +76,12 @@ Rectangle {
         }
 
         TableViewColumn {
-            id: timeColumn
+            id: chNameColumn
             title: "姓名"
-            role: "name"
+            role: "chinese_name"
             movable: false
             resizable: true
-            width: tableView.viewport.width / 3
+            width: tableView.viewport.width / 6
 
             delegate: Text {
                 anchors.verticalCenter: parent.verticalCenter
@@ -96,8 +94,26 @@ Rectangle {
         }
 
         TableViewColumn {
-            id: canidColumn
-            title: "EMAIL"
+            id: enNameColumn
+            title: "英文"
+            role: "english_name"
+            movable: false
+            resizable: true
+            width: tableView.viewport.width / 6
+
+            delegate: Text {
+                anchors.verticalCenter: parent.verticalCenter
+                color: "black"
+                elide: styleData.elideMode
+                text: styleData.value
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+
+        TableViewColumn {
+            id: emailColumn
+            title: "信箱"
             role: "email"
             movable: false
             resizable: true
@@ -124,14 +140,12 @@ Rectangle {
         target: manage
 
         // Sum signal handler
-        function onDumpSig(id, name, email) {
-            //console.log(id + ' ' + name + ' ' + emnil)
-            var msg = {'id': id, 'name': name, 'email': email, 'model': listModel};
+        function onSheetDumpSig(id, chinese_name, english_name, email) {
+            var msg = {'id': id, 'chinese_name': chinese_name, 'english_name': english_name, 'email': email, 'model': listModel};
             dumpWorker.sendMessage(msg);
-            sendDataToGenQRCode(msg);
         }
 
-        function onDumpInit() {
+        function onSheetDumpInit() {
             var msg = {'model': listModel}
             dumpWorker.sendMessage(msg);
         }

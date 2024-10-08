@@ -84,11 +84,6 @@ Rectangle {
 
                 GoogleSheetDump {
                     id: googleSheetDumpArea
-
-                    // 當 `GoogleSheetDump` 發送 sendDataToGenQRCode 信號時執行
-                    onSendDataToGenQRCode: {
-                        handleQRCodeData(data)
-                    }
                 }
             }  
             
@@ -100,14 +95,14 @@ Rectangle {
                 Layout.column: 2
 
                 Button {
-                    id: getDataButton
-                    text: "Get sheet data"
+                    id: genQRCodeSheetButton
+                    text: "generate_code_sheet"
                     enabled: gsKeyFileText.text !== "" && gsURLText.text !== "" ? true : false
 
                     onClicked: {
                         var service_file = gsKeyFileText.text;
                         var sheet_url = gsURLText.text;
-                        manage.get_sheet_data(service_file, sheet_url);
+                        manage.genQRCodeSheet(service_file, sheet_url);
                     }
                 }
             }
@@ -128,12 +123,5 @@ Rectangle {
                gsKeyFileText.text = filepath.slice(7);
            }
         }
-    }
-
-    // 處理 QR Code 數據的函數
-    function handleQRCodeData(data) {
-        qr_data = "ID: " + data.id + ", Name: " + data.name + ", Email: " + data.email;
-        output_file = data.id + "_" + data.name + "_qrcode.png"
-        manage.qrcode_generate(qr_data, output_file, "images")
     }
 }

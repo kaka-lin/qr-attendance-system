@@ -13,8 +13,8 @@ ROOT_DIR = os.getcwd()
 
 def main(saved_format="csv"):
     # 透過憑證連接 google sheet
-    service_file = config["google_sheet_key"]
-    url = config["google_sheet_url"]
+    service_file = config["GOOGLE_SHEET_KEY"]
+    url = config["GOOGLE_SHEET_URL"]
     gs = GoogleSheetHelper(service_file=service_file, url=url)
     qrcode_generator = QRCodeHelper()
     
@@ -31,7 +31,7 @@ def main(saved_format="csv"):
     qr_data_pd = data[item_list].copy()
 
     # Add a unique_id column to the DataFrame
-    qr_data_pd['unique_id'] = [str(uuid.uuid4()) for _ in range(len(qr_data_pd))]
+    qr_data_pd.loc[:, 'unique_id'] = [str(uuid.uuid4()) for _ in range(len(qr_data_pd))]
 
     # 2. generate qr code
     for index, row in qr_data_pd.iterrows():
@@ -55,7 +55,7 @@ def main(saved_format="csv"):
         qrcode_generator.generate(qr_data, output_file=output_file, output_dir=output_dir)
 
     # Add a 'scanned' column to the DataFrame 
-    qr_data_pd['scanned'] = False  # Default scanned column
+    qr_data_pd.loc[:, 'scanned'] = False  # Default scanned column
 
     if saved_format == "xlsx":
         # Save DataFrame to an Excel file

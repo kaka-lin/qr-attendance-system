@@ -2,32 +2,13 @@
 
 ## Usage
 
-1. Install `zbar library` fisrt
-
-> Because we using `pyzbar` to decode QRCode, and it depends on the `zbar` library.
-   
-   - macOS:
-
-        ```sh
-        $ brew install zbar
-        $ ln -s $(brew --prefix zbar)/lib/libzbar.dylib  <Yout Python path>/lib/libzbar.dylib
-        ```
-
-        說明看這：[ImportError: Unable to find zbar shared library](#1-importerror-unable-to-find-zbar-shared-library)
-
-   - Ubuntu/Debian:
-
-        ```sh
-        $ sudo apt-get install libzbar0
-        ```
-
-2. Install Python packages
+1. Install Python packages
 
     ```sh
     $ pip3 install -r requirements.txt
     ```
 
-3. Running to generate QR Code
+2. Running to generate QR Code
 
     ```sh
     $ python3 qrcode_tool.py
@@ -55,7 +36,15 @@ if you want to packing Python programs into stand-alone executables
 
 ## Issues
 
-### 1. ImportError: Unable to find zbar shared library
+### - `pyzbar` decode 中文亂碼
+
+如標題，pyzbar 在解碼中文 QRCODE 時，會有亂碼出現
+
+#### 解法
+
+棄用 `pyzbar`，改用 [cv::QRCodeDetector()](https://docs.opencv.org/4.x/de/dc3/classcv_1_1QRCodeDetector.html)。
+
+### - ImportError: Unable to find zbar shared library
 
 在 mac 上，當我們用 `homebrew` 安裝完 `zbar` 後仍然會出現 ImportError 如下:
 
@@ -86,6 +75,5 @@ $ ln -s $(brew --prefix zbar)/lib/libzbar.dylib  /Users/kaka/opt/miniconda3/envs
 
 #### Reference
 
-
-
 - [NaturalHistoryMuseum/pyzbar/issues:  ImportError: Unable to find zbar shared library #37 ](https://github.com/NaturalHistoryMuseum/pyzbar/issues/37)
+

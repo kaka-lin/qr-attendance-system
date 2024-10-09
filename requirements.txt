@@ -2,6 +2,6 @@ qrcode
 pygsheets
 PyQt5==5.15.10
 opencv-python
-pyzbar
-openpyxl
+# pyzbar
+openpyxl # Save DataFrame to an Excel file
 pymongo

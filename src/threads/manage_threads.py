@@ -20,6 +20,8 @@ class ManageThreads(QObject):
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal()
 
+    decodeMsgSig = pyqtSignal(str, arguments=['qr_data'])
+
     def __init__(self, db, parent=None):
         super(ManageThreads, self).__init__(parent)
 
@@ -87,6 +89,7 @@ class ManageThreads(QObject):
 
         worker.frameReady.connect(self.frameReady)
         worker.finished.connect(self.finished)
+        worker.decodeMsgSig.connect(self.decodeMsgSig)
 
         thread.started.connect(worker.start)
         thread.start()

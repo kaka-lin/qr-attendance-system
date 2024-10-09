@@ -11,26 +11,22 @@ Rectangle {
     anchors.fill: parent
 
     Column {
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 30
+        anchors.fill: parent
+        anchors.topMargin: 15
 
-        spacing: 100
+        spacing: 30
 
-        GridLayout {
-            id: grid
-
-            rowSpacing: 12
-            columnSpacing: 12
+        Row {
+            id: btnRow
+            spacing: (parent.width - playButton.width *2) / 4
+            anchors.horizontalCenter: parent.horizontalCenter
 
             // row 1
             Button {
                 id: playButton
+                width: 120;
+                height: 60;
                 text: "Play"
-
-                Layout.row: 0
-                Layout.column: 0
-
                 onClicked: {
                     player.play();
                 }
@@ -38,34 +34,58 @@ Rectangle {
 
             Button {
                 id: stopButton
+                width: playButton.width;
+                height: playButton.height;
                 text: "Stop"
-
-                Layout.row: 0
-                Layout.column: 1
-
                 onClicked: {
                     player.stop();
                 }
             }
+        }
 
-            // row 2
+        Row {
+            id : areaColumn
+            spacing: 30
+            anchors.horizontalCenter: parent.horizontalCenter
+
             Rectangle {
                 id: videoArea
-                width: 600
+                width: (root.width - 90) / 2
                 height: 300
                 border.color: "gray"
                 border.width: 1
-
-                Layout.row: 1
-                Layout.column: 0
-                Layout.columnSpan: 2
-    
                 VideoOutput {
                     source: player
                     anchors.fill: parent
                     focus : visible // to receive focus and capture key events when visible
                 }
             }
+
+            Rectangle {
+                id: decodeArea
+                width: videoArea.width
+                height: 300
+                border.color: "gray"
+                border.width: 1
+                color: "black"
+
+                Text {
+                    id: decodeStatus
+                    color: "white"
+                    text: ""
+
+                    anchors.centerIn: parent
+                    anchors.leftMargin: 10
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: manage
+
+        function onDecodeMsgSig(qr_data) {
+            decodeStatus.text = qr_data;
         }
     }
 }

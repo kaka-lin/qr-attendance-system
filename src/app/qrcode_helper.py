@@ -3,16 +3,21 @@ import uuid
 
 import cv2
 import qrcode
-from pyzbar import pyzbar
+import numpy as np
 import matplotlib.pyplot as plt
+from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 
-class QRCodeHelper:
+class QRCodeHelper(QObject):
+    decodeMsgSig = pyqtSignal(str)
+
     def __init__(self, 
                  version=None, 
                  error_correction=qrcode.constants.ERROR_CORRECT_L,
                  box_size=10,
-                 border=4):    
+                 border=4,
+                 parent=None): 
+        super(QRCodeHelper, self).__init__(parent)   
         # 創建 QR Code
         #   - version: Controls the size of the QR code, 
         #              from 1 to 40, 1: 21x21, 40: 177x177, or None for automatic
@@ -22,6 +27,8 @@ class QRCodeHelper:
             box_size=box_size,  # Size of each box in pixels
             border=border,  # Border size
         )
+
+        self.qrcode_detector = cv2.QRCodeDetector()   
     
     def generate(self, data, output_file="qrcode.png", output_dir="images"):
         if data is None or data == "":
@@ -43,40 +50,42 @@ class QRCodeHelper:
         print(f"QR code saved to {image_path}")
         return image_path
     
-    def decode(self, image):
-        # Using pyzbar to decode the QR code image
-        decoded_objects = pyzbar.decode(image)
-    
-        # if no QR code is detected
-        if not decoded_objects:
-            print("No QR code detected")
-        else:
-            # Loop over the detected QR codes
-            for obj in decoded_objects:
-                qr_type = obj.type
-                qr_data = obj.data.decode('utf-8')
-            
-                print(f"Type: {qr_type}")
-                print(f"Data: {qr_data}")
+    def decode(self, image):   
+        decoded_data, points, _ = self.qrcode_detector.detectAndDecode(image)
+        if decoded_data:
+            # print(f"QR Code detected: \n{decoded_text}")
+            # 畫出 QR Code 的邊框
+            # points 是一個形狀為 (1, 4, 2) 的 NumPy 數組，其中：
+            # - 1: 代表 QR Code 檢測到的數量（如果檢測到多個 QR Code，這個數量會增加）。
+            # - 4: 代表 QR Code 的四個角點（四個點形成一個四邊形，對應 QR Code 的邊界）。
+            # - 2: 代表每個點的 (x, y) 座標值。
+            if points is not None and len(points) > 0:
+                points = points[0]  # points 是一個多維數組，需要先提取第一個元素
+                # 使用 cv2.rectangle 繪製 QR Code 邊框
+                top_left = (int(points[0][0]), int(points[0][1]))
+                bottom_right = (int(points[2][0]), int(points[2][1]))
+                cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
 
-                # 在圖像上繪製邊框
-                (x, y, w, h) = obj.rect
-                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            # 將解碼的資料傳送給 UI
+            self.decodeMsgSig.emit(decoded_data)
+        else:
+            print("QR Code not detected")
+            self.decodeMsgSig.emit("")
         return image
 
 
 if __name__ == "__main__":
-    name = "Kaka Lin"
+    chinese_name = "林家豪"
+    english_name = "Kaka"
     email = "vn503024@gmail.com"
     output_dir = "images"
-    output_file = "qrcode_kaka.png"
+    output_file = "qrcode.png"
 
-    # 將姓名和信箱等資訊组合成字串
-    data = f"Name: {name}\nEmail: {email}"
+    qr_data = f"姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
 
     # 生成 QR Code
     qrcode_generator = QRCodeHelper()
-    qrcode_generator.generate(data, output_file=output_file)
+    qrcode_generator.generate(qr_data, output_file=output_file)
 
     # 解碼 QR Code
     # Load the QR code image

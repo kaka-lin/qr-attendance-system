@@ -43,7 +43,7 @@ class GoogleSheetThread(QObject):
 
         # 3. Save the data to MongoDB
         qr_data_dict = qr_data_pd.to_dict(orient='records')
-        self.db.create_many(qr_data_dict)
+        self.db.create_or_update_many(qr_data_dict)
 
         # generate qr code and emit signal to update UI
         for index, row in qr_data_pd.iterrows():

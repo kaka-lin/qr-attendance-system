@@ -6,7 +6,7 @@ from typing import List, Dict
 
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 import pandas as pd
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateMany
 from pymongo.errors import ConnectionFailure, InvalidURI, OperationFailure, BulkWriteError
 
 from config import config
@@ -60,17 +60,32 @@ class MongoController(QObject):
         except Exception as e:
             print(f"Failed to insert documents: {e}")
     
-    def create_many(self, data: List[Dict]):        
+    def create_or_update_many(self, data: List[Dict]):        
         try:
             result = self.collection.insert_many(data, ordered=False)
             print(f"Inserted {len(result.inserted_ids)} documents successfully")
         except BulkWriteError as bwe:
-            # 獲取並處理批量寫入錯誤
-            # print("Failed to insert multiple documents: batch op errors occurred.")
-            # for error in bwe.details['writeErrors']:
-            #     print(f"Error {error['code']}: {error['errmsg']}")
-            #     print(f"Duplicate key: {error['keyValue']}")
-            pass
+            # print(f"Bulk write error occurred: {bwe.details}")
+            write_errors = bwe.details.get('writeErrors', [])
+        
+            # 準備批量更新操作列表
+            update_operations = []
+            for error in write_errors:
+                if error['code'] == 11000:  # 11000 表示重複鍵錯誤
+                    duplicate_data = error['op']
+
+                    # 收集要進行批量更新的操作
+                    update_operations.append(UpdateMany(
+                        {'中文姓名': duplicate_data['中文姓名'], '電子郵件地址': duplicate_data['電子郵件地址']},
+                        {'$set': {'unique_id': duplicate_data['unique_id'], 'scanned': duplicate_data['scanned']}}
+                    ))
+
+            # 如果有需要更新的資料，執行批量更新操作
+            if update_operations:
+                try:
+                    self.collection.bulk_write(update_operations, ordered=False)
+                except Exception as e:
+                    print(f"Update failed: {e}")
         except Exception as e:
             print(f"An error occurred: {e}")
 

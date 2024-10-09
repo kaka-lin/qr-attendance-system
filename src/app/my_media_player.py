@@ -82,13 +82,12 @@ class MyMediaPlayer(QObject):
         #   因此需要先將 QImage 包裝為 QVideoFrame
         #   才能丟進 m_surface.present()
         video_frame = QVideoFrame(self.m_image)
-        if self.m_surface.isActive():
-            self.m_surface.present(video_frame)
+        self.m_surface.present(video_frame)
 
     @pyqtSlot()
     def play(self):
-        self.m_backend.startVideo()
+        self.m_backend.opencvStart()
 
     @pyqtSlot()
     def stop(self):
-        self.m_backend.framefinished()
+        self.m_backend.opencvStop()

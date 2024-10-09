@@ -79,23 +79,28 @@ class ManageThreads(QObject):
     ############################################################################################################
     # The following methods are used to scan the QR code
     @pyqtSlot()
-    def startVideo(self):
+    def opencvStart(self):
         worker = VideoThread()
         thread = QtCore.QThread(self)
-        self.__thread_maps['start_video'] = [thread, worker]
+        self.__thread_maps['OpenCV'] = [thread, worker]
         worker.moveToThread(thread)
 
         worker.frameReady.connect(self.frameReady)
-        worker.framefinished.connect(self.framefinished)
+        worker.finished.connect(self.finished)
 
         thread.started.connect(worker.start)
         thread.start()
 
     @pyqtSlot()
-    def framefinished(self):
-        if 'start_video' in self.__thread_maps:
-            thread, worker = self.__thread_maps['start_video']
-            worker.stopVideo()
+    def opencvStop(self):
+        if 'OpenCV' in self.__thread_maps:
+            thread, worker = self.__thread_maps['OpenCV']
+            worker.stop()
+
+    @pyqtSlot(str)
+    def finished(self, thread_name):
+        if thread_name in self.__thread_maps:
+            thread, worker = self.__thread_maps[thread_name]
             thread.quit()
             thread.wait()
-        print("Video Thread Finished")
+        print(f"{thread_name} Thread Finished")

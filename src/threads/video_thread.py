@@ -10,7 +10,7 @@ from src.app.qrcode_helper import QRCodeHelper
 class VideoThread(QObject):
     """ This thread is capture video with opencv """
     frameReady = pyqtSignal(np.ndarray)
-    framefinished = pyqtSignal()
+    finished = pyqtSignal(str)
 
     def __init__(self, camera_port=0, parent=None):
         super(VideoThread, self).__init__(parent)
@@ -42,8 +42,7 @@ class VideoThread(QObject):
             self.frameReady.emit(frame)
         
         self.cap.release()
-        cv2.destroyAllWindows()
-        self.framefinished.emit()
+        self.finished.emit("OpenCV")
     
-    def stopVideo(self):
+    def stop(self):
         self.running = False

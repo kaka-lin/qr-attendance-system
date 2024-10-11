@@ -122,13 +122,8 @@ class MongoController(QObject):
         try:
             if multiple:
                 result = self.collection.update_many(query_filter, update_data)
-                print(f"Updated {result.modified_count} documents successfully")
             else:
                 result = self.collection.update_one(query_filter, update_data)
-                if result.matched_count:
-                    print(f"Updated {result.modified_count} document successfully")
-                else:
-                    print("No matching document found to update")
         except Exception as e:
             print(f"Failed to update documents: {e}")
 

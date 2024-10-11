@@ -12,7 +12,7 @@ class VideoThread(QObject):
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal(str)
 
-    decodeMsgSig = pyqtSignal(str, bool)
+    decodeMsgSig = pyqtSignal(bool, str, bool)
 
     def __init__(self, camera_port=0, db=None, parent=None):
         super(VideoThread, self).__init__(parent)

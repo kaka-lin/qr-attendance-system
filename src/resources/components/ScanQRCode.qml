@@ -73,7 +73,7 @@ Rectangle {
         }
 
         Row {
-            id : areaColumn
+            id : areaRow
             spacing: 30
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -108,16 +108,40 @@ Rectangle {
                 }
             }
         }
+
+        Rectangle {
+            id: checkInArea
+            width: decodeArea.width
+            height: 100
+            border.color: "gray"
+            border.width: 1
+            color: "lightgray"
+            anchors.right: areaRow.right
+
+            Text {
+                id: checkInStatus
+                text: "尚未檢測到 QR Code"
+                color: "orange"
+                font.pointSize: 32
+                anchors.centerIn: parent
+                anchors.leftMargin: 10
+            }
+        }
     }
 
     Connections {
         target: manage
 
-        function onDecodeMsgSig(qr_data, isScanned) {
-            decodeStatus.text = qr_data;
-            // console.log("is Scanned: " + isScanned);
-            if (isScanned) {
-                decodeStatus.color = "red";
+        function onDecodeMsgSig(isDetected, qr_data, isScanned) {
+            if (isDetected) {
+                decodeStatus.text = qr_data;
+                if (isScanned) {
+                    checkInStatus.text = "已報到過";
+                    checkInStatus.color = "red";
+                } else {
+                    checkInStatus.text = "報到成功";
+                    checkInStatus.color = "green";
+                }
             }
         }
     }

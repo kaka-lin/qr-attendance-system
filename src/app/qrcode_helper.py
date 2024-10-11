@@ -10,7 +10,7 @@ from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 
 class QRCodeHelper(QObject):
-    decodeMsgSig = pyqtSignal(str, bool)
+    decodeMsgSig = pyqtSignal(bool, str, bool)
 
     def __init__(self, 
                  version=None, 
@@ -53,9 +53,13 @@ class QRCodeHelper(QObject):
         print(f"QR code saved to {image_path}")
         return image_path
     
-    def decode(self, image):   
+    def decode(self, image):
+        isDetected = False
+        isScanned = False
         decoded_data, points, _ = self.qrcode_detector.detectAndDecode(image)
+
         if decoded_data:
+            isDetected = True
             # print(f"QR Code detected: \n{decoded_text}")
             # 畫出 QR Code 的邊框
             # points 是一個形狀為 (1, 4, 2) 的 NumPy 數組，其中：
@@ -73,7 +77,6 @@ class QRCodeHelper(QObject):
             data_dict = dict(data.split(": ") for data in decoded_list)
             self.query_filter = {'unique_id': data_dict['unique_id']}
             
-            isScanned = False
             if self.db:
                 data, isFound = self.db.query(self.query_filter)
                 if isFound:
@@ -83,9 +86,10 @@ class QRCodeHelper(QObject):
                         isScanned = True
 
             # 將解碼的資料傳送給 UI
-            self.decodeMsgSig.emit(decoded_data, isScanned)
+            # emit: (isDetected, decoded_data, isScanned)
+            self.decodeMsgSig.emit(isDetected, decoded_data, isScanned)
         else:
-            self.decodeMsgSig.emit("", False)
+            self.decodeMsgSig.emit(isDetected, "", isScanned)
             
         return image, decoded_data
 

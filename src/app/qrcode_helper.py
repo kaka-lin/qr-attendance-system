@@ -9,17 +9,12 @@ import matplotlib.pyplot as plt
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 
-class QRCodeHelper(QObject):
-    decodeMsgSig = pyqtSignal(bool, str, bool)
-
+class QRCodeHelper:
     def __init__(self, 
                  version=None, 
                  error_correction=qrcode.constants.ERROR_CORRECT_L,
                  box_size=10,
-                 border=4,
-                 db=None,
-                 parent=None): 
-        super(QRCodeHelper, self).__init__(parent)   
+                 border=4): 
         # 創建 QR Code
         #   - version: Controls the size of the QR code, 
         #              from 1 to 40, 1: 21x21, 40: 177x177, or None for automatic
@@ -31,7 +26,6 @@ class QRCodeHelper(QObject):
         )
 
         self.qrcode_detector = cv2.QRCodeDetector()   
-        self.db = db
     
     def generate(self, data, output_file="qrcode.png", output_dir="images"):
         if data is None or data == "":
@@ -54,12 +48,9 @@ class QRCodeHelper(QObject):
         return image_path
     
     def decode(self, image):
-        isDetected = False
-        isScanned = False
         decoded_data, points, _ = self.qrcode_detector.detectAndDecode(image)
 
         if decoded_data:
-            isDetected = True
             # print(f"QR Code detected: \n{decoded_text}")
             # 畫出 QR Code 的邊框
             # points 是一個形狀為 (1, 4, 2) 的 NumPy 數組，其中：
@@ -73,24 +64,6 @@ class QRCodeHelper(QObject):
                 bottom_right = (int(points[2][0]), int(points[2][1]))
                 cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
 
-            decoded_list = decoded_data.strip().split("\n")
-            data_dict = dict(data.split(": ") for data in decoded_list)
-            self.query_filter = {'unique_id': data_dict['unique_id']}
-            
-            if self.db:
-                data, isFound = self.db.query(self.query_filter)
-                if isFound:
-                    if data['scanned'] == False:
-                        self.db.update(self.query_filter, {'$set': {'scanned': True}})
-                    else:
-                        isScanned = True
-
-            # 將解碼的資料傳送給 UI
-            # emit: (isDetected, decoded_data, isScanned)
-            self.decodeMsgSig.emit(isDetected, decoded_data, isScanned)
-        else:
-            self.decodeMsgSig.emit(isDetected, "", isScanned)
-            
         return image, decoded_data
 
 

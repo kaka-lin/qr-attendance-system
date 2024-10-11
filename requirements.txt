@@ -5,3 +5,4 @@ opencv-python
 # pyzbar
 openpyxl # Save DataFrame to an Excel file
 pymongo
+pygame

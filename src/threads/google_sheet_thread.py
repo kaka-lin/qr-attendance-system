@@ -19,8 +19,9 @@ class GoogleSheetThread(QObject):
 
         # initialize GoogleSheetHelper
         self.gs = GoogleSheetHelper(service_file=service_file, url=url)
-        self.qrcode_generator = QRCodeHelper()
+
         self.db = db
+        self.qrcode_generator = QRCodeHelper(db=self.db)
 
         self.output_dir = os.environ["ROOT_DIR"] + "/images"
 
@@ -54,7 +55,7 @@ class GoogleSheetThread(QObject):
             english_name = row[column_titles[5]]
 
             # Create QR data text
-            qr_data = f"id: {unique_id}\n姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
+            qr_data = f"unique_id: {unique_id}\n姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
             output_file = f"{index+1}_{english_name}_qrcode.png"
 
             self.generate_qrcode(qr_data, output_file, self.output_dir)

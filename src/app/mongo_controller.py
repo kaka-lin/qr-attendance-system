@@ -7,7 +7,7 @@ from typing import List, Dict
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 import pandas as pd
 from pymongo import MongoClient, UpdateMany
-from pymongo.errors import ConnectionFailure, InvalidURI, OperationFailure, BulkWriteError
+from pymongo.errors import ConnectionFailure, InvalidURI, OperationFailure, BulkWriteError, DuplicateKeyError
 
 from config import config
 
@@ -53,12 +53,16 @@ class MongoController(QObject):
             print(f"Failed to select database or collection: {e}")
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
-
-    def create(self, data: Dict):
+    
+    def create_or_update_one(self, data: Dict):        
         try:
+            # Insert the document
             result = self.collection.insert_one(data)
+            print("Inserted document successfully")
+        except DuplicateKeyError as dke:
+            pass
         except Exception as e:
-            print(f"Failed to insert documents: {e}")
+            print(f"An error occurred: {e}")
     
     def create_or_update_many(self, data: List[Dict]):        
         try:
@@ -93,12 +97,15 @@ class MongoController(QObject):
         try:
             result = self.collection.find(query_filter)
             documents = list(result)  # 將結果轉換為列表
-            for doc in documents:
-                print(doc)
-            return documents
+            if documents:
+                # for doc in documents:
+                #     print(doc)
+                return documents[0], True
+            else:
+                return documents, False
         except Exception as e:
             print(f"Failed to query documents: {e}")
-            return None
+            return [], False
     
     def query_all(self):
         try:
@@ -110,6 +117,20 @@ class MongoController(QObject):
         except Exception as e:
             print(f"Failed to query all documents: {e}")
             return None
+    
+    def update(self, query_filter: Dict, update_data: Dict, multiple: bool = False):
+        try:
+            if multiple:
+                result = self.collection.update_many(query_filter, update_data)
+                print(f"Updated {result.modified_count} documents successfully")
+            else:
+                result = self.collection.update_one(query_filter, update_data)
+                if result.matched_count:
+                    print(f"Updated {result.modified_count} document successfully")
+                else:
+                    print("No matching document found to update")
+        except Exception as e:
+            print(f"Failed to update documents: {e}")
 
     def delete(self, query_filter):
         try:
@@ -117,6 +138,7 @@ class MongoController(QObject):
             print(f"Deleted {result.deleted_count} documents")
         except Exception as e:
             print(f"Failed to delete documents: {e}")
+
     @pyqtSlot()
     def close(self):
         if self.client:
@@ -139,17 +161,18 @@ if __name__ == "__main__":
 
     # 插入一個文檔
     item_1 = {
-        "name": "Kaka Lin", 
-        "email": "vn503024@gmail.com"
+        "中文": "林家豪", 
+        "英文": "Kaka Lin",
+        "信箱": "vn503024@gmail.com",
     }
-    mongo_controller.create(item_1)
+    mongo_controller.create_or_update_one(item_1)
 
     # 查詢所有文檔
     mongo_controller.query_all()
 
     # 查詢特定條件的文檔
-    query_filter = {"name": "Kaka Lin"}
-    mongo_controller.query(query_filter)
+    query_filter = {"中文": "林家豪"}
+    query_data, isScanned = mongo_controller.query(query_filter)
 
     # 刪除文檔
     # mongo_controller.delete(query_filter)

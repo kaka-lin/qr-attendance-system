@@ -12,15 +12,16 @@ class VideoThread(QObject):
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal(str)
 
-    decodeMsgSig = pyqtSignal(str)
+    decodeMsgSig = pyqtSignal(str, bool)
 
-    def __init__(self, camera_port=0, parent=None):
+    def __init__(self, camera_port=0, db=None, parent=None):
         super(VideoThread, self).__init__(parent)
 
         self.camera_port = camera_port
         self.running = False
 
-        self.qrcode = QRCodeHelper()
+        self.db = db
+        self.qrcode = QRCodeHelper(db=self.db)
         self.qrcode.decodeMsgSig.connect(self.decodeMsgSig)
 
     @pyqtSlot()

@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 
 import cv2
 import qrcode
@@ -9,13 +10,14 @@ from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 
 class QRCodeHelper(QObject):
-    decodeMsgSig = pyqtSignal(str)
+    decodeMsgSig = pyqtSignal(str, bool)
 
     def __init__(self, 
                  version=None, 
                  error_correction=qrcode.constants.ERROR_CORRECT_L,
                  box_size=10,
                  border=4,
+                 db=None,
                  parent=None): 
         super(QRCodeHelper, self).__init__(parent)   
         # 創建 QR Code
@@ -29,6 +31,7 @@ class QRCodeHelper(QObject):
         )
 
         self.qrcode_detector = cv2.QRCodeDetector()   
+        self.db = db
     
     def generate(self, data, output_file="qrcode.png", output_dir="images"):
         if data is None or data == "":
@@ -66,12 +69,25 @@ class QRCodeHelper(QObject):
                 bottom_right = (int(points[2][0]), int(points[2][1]))
                 cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2)
 
+            decoded_list = decoded_data.strip().split("\n")
+            data_dict = dict(data.split(": ") for data in decoded_list)
+            self.query_filter = {'unique_id': data_dict['unique_id']}
+            
+            isScanned = False
+            if self.db:
+                data, isFound = self.db.query(self.query_filter)
+                if isFound:
+                    if data['scanned'] == False:
+                        self.db.update(self.query_filter, {'$set': {'scanned': True}})
+                    else:
+                        isScanned = True
+
             # 將解碼的資料傳送給 UI
-            self.decodeMsgSig.emit(decoded_data)
+            self.decodeMsgSig.emit(decoded_data, isScanned)
         else:
-            print("QR Code not detected")
-            self.decodeMsgSig.emit("")
-        return image
+            self.decodeMsgSig.emit("", False)
+            
+        return image, decoded_data
 
 
 if __name__ == "__main__":
@@ -91,7 +107,11 @@ if __name__ == "__main__":
     # Load the QR code image
     image_path = os.path.join(output_dir, output_file)
     qr_image = cv2.imread(image_path)
-    decoded_image = qrcode_generator.decode(qr_image)
+    decoded_image, decoded_data = qrcode_generator.decode(qr_image)
+
+    decoded_data = decoded_data.strip().split("\n")
+    data_dict = dict(data.split(": ") for data in decoded_data)
+    print(data_dict)
 
     # Display the decoded image
     plt.imshow(cv2.cvtColor(decoded_image, cv2.COLOR_BGR2RGB))

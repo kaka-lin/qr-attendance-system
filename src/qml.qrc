@@ -9,6 +9,8 @@
         <file>resources/images/about.ico</file>
         <file>resources/images/exit.ico</file>
         <file>resources/images/newFile.ico</file>
+        <file>resources/images/light_g.png</file>
+        <file>resources/images/light_r.png</file>
 
         <file>resources/js/datadump.js</file>
     </qresource>

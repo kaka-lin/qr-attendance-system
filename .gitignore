@@ -11,7 +11,7 @@ venv/
 ._.DS_Store
 
 # cofing
-credentials.json
+config/credentials
 config/dev.py
 
 # QR code

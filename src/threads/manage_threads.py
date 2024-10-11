@@ -20,7 +20,7 @@ class ManageThreads(QObject):
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal()
 
-    decodeMsgSig = pyqtSignal(str, arguments=['qr_data'])
+    decodeMsgSig = pyqtSignal(str, bool,  arguments=['qr_data', 'isScanned'])
 
     def __init__(self, db, parent=None):
         super(ManageThreads, self).__init__(parent)
@@ -58,7 +58,7 @@ class ManageThreads(QObject):
     @pyqtSlot(str, str)
     def genQRCodeSheet(self, service_file, url):
         self.sheetDumpInit.emit()
-        
+
         worker = GoogleSheetThread(service_file, url, self.db)
         thread = QtCore.QThread(self)
         self.__thread_maps['generate_qrcode_sheet'] = [thread, worker]
@@ -82,7 +82,7 @@ class ManageThreads(QObject):
     # The following methods are used to scan the QR code
     @pyqtSlot()
     def opencvStart(self):
-        worker = VideoThread()
+        worker = VideoThread(db=self.db)
         thread = QtCore.QThread(self)
         self.__thread_maps['OpenCV'] = [thread, worker]
         worker.moveToThread(thread)

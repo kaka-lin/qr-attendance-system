@@ -18,8 +18,30 @@ Rectangle {
 
         Row {
             id: btnRow
-            spacing: (parent.width - playButton.width *2) / 4
+            spacing: (parent.width - playButton.width *4) / 5
             anchors.horizontalCenter: parent.horizontalCenter
+
+            Rectangle {
+                id: statusRect
+                width: 30
+                height: 30
+                anchors.verticalCenter: playButton.verticalCenter
+
+                Image {
+                    id: statusImage
+                    source: "qrc:resources/images/light_r.png"
+                    asynchronous:true
+                    fillMode: Image.PreserveAspectFit
+                    anchors.fill: parent
+                }
+            }
+
+            Label {
+                id: statusLabel
+                text: "Not Connected to DB"    
+
+                anchors.verticalCenter: playButton.verticalCenter              
+            }
 
             // row 1
             Button {
@@ -27,8 +49,12 @@ Rectangle {
                 width: 120;
                 height: 60;
                 text: "Play"
+                enabled: false
+
                 onClicked: {
                     player.play();
+                    playButton.enabled = false;
+                    stopButton.enabled = true;
                 }
             }
 
@@ -37,8 +63,11 @@ Rectangle {
                 width: playButton.width;
                 height: playButton.height;
                 text: "Stop"
+                enabled: false
+
                 onClicked: {
                     player.stop();
+                    playButton.enabled = true;
                 }
             }
         }
@@ -84,9 +113,22 @@ Rectangle {
     Connections {
         target: manage
 
-        function onDecodeMsgSig(qr_data) {
+        function onDecodeMsgSig(qr_data, isScanned) {
             decodeStatus.text = qr_data;
+            // console.log("is Scanned: " + isScanned);
+            if (isScanned) {
+                decodeStatus.color = "red";
+            }
         }
+    }
+
+    Component.onCompleted: {
+        var db_name = "halloween";
+        var collection_name = "Users";
+        db.choose_collection(db_name, collection_name);
+        playButton.enabled = true;
+        statusLabel.text = "Already Connected to DB";
+        statusImage.source = "qrc:resources/images/light_g.png";
     }
 }
 

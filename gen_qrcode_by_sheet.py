@@ -46,7 +46,7 @@ def main(saved_format="csv"):
 
         # Define the output file name and path
         output_file = f"{index+1}_{english_name}_qrcode.png"
-        output_dir = f"{ROOT_DIR}/images"
+        output_dir = f"{ROOT_DIR}/datas"
 
         # Ensure the output directory exists
         os.makedirs(output_dir, exist_ok=True)

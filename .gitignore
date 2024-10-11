@@ -15,7 +15,8 @@ config/credentials
 config/dev.py
 
 # QR code
-images/
+datas/
+src/app/images
 
 # data
 *.csv

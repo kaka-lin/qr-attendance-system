@@ -23,7 +23,7 @@ class GoogleSheetThread(QObject):
         self.db = db
         self.qrcode_generator = QRCodeHelper(db=self.db)
 
-        self.output_dir = os.environ["ROOT_DIR"] + "/images"
+        self.output_dir = os.environ["ROOT_DIR"] + "/datas"
 
     @pyqtSlot(int)
     def generate_code_sheet(self, index):

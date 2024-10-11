@@ -34,7 +34,7 @@ class ManageThreads(QObject):
             output_file = "qrcode.png"
         if not output_dir:
             root_path = os.environ["ROOT_DIR"]
-            output_dir = os.path.join(root_path, "images")
+            output_dir = os.path.join(root_path, "datas")
         
         worker = QRCodeThread()
         thread = QtCore.QThread(self)

@@ -13,8 +13,8 @@ class ManageThreads(QObject):
     genQRCodeSig = pyqtSignal(str, arguments=['image_path'])
 
     sheetDumpInit = pyqtSignal()
-    sheetDumpSig = pyqtSignal(str, str, str, str, arguments=[
-        'id', 'chinese_name', 'english_name', 'email'])
+    sheetDumpSig = pyqtSignal(str, str, str, str, str, arguments=[
+        'id', 'chinese_name', 'english_name', 'email', 'rotaract_club'])
     genQRCodeSheetDone = pyqtSignal()
 
     frameReady = pyqtSignal(np.ndarray)

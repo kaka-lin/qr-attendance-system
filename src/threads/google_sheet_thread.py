@@ -10,8 +10,8 @@ from src.app.mongo_controller import MongoController
 
 
 class GoogleSheetThread(QObject):
-    sheetDumpSig = pyqtSignal(str, str, str, str, arguments=[
-        'id', 'chinese_name', 'english_name', 'email'])
+    sheetDumpSig = pyqtSignal(str, str, str, str, str, arguments=[
+        'id', 'chinese_name', 'english_name', 'email', 'rotaract_club'])
     genQRCodeSheetDone = pyqtSignal()
 
     def __init__(self, service_file, url, db, parent=None):
@@ -21,7 +21,7 @@ class GoogleSheetThread(QObject):
         self.gs = GoogleSheetHelper(service_file=service_file, url=url)
 
         self.db = db
-        self.qrcode_generator = QRCodeHelper(db=self.db)
+        self.qrcode_generator = QRCodeHelper()
 
         self.output_dir = os.environ["ROOT_DIR"] + "/datas"
 
@@ -33,14 +33,17 @@ class GoogleSheetThread(QObject):
         index = 0 if not index else index
         data = self.get_all_data(index)
         
-        # 1. processing data: only need email, chinese_name, english_name
+        # 1. processing data: only need email, chinese_name, english_name, rotaract_club
         column_titles = data.columns.tolist()
-        item_list = [column_titles[1], column_titles[4], column_titles[5]]
+        item_list = [column_titles[1], column_titles[4], column_titles[5], column_titles[2], column_titles[11]]
         qr_data_pd = data[item_list].copy()
 
         # 2. Add a unique_id column to the DataFrame
         qr_data_pd.loc[:, 'unique_id'] = [str(uuid.uuid4()) for _ in range(len(qr_data_pd))]
         qr_data_pd.loc[:, 'scanned'] = False
+        qr_data_pd.loc[:, 'rotaract_club'] = qr_data_pd.apply(
+            lambda row: row[column_titles[2]] if row[column_titles[2]] != '其他友社及來賓' else row[column_titles[11]]+"來賓", axis=1)
+        qr_data_pd = qr_data_pd.drop(columns=[column_titles[2], column_titles[11]])
 
         # 3. Save the data to MongoDB
         qr_data_dict = qr_data_pd.to_dict(orient='records')
@@ -53,13 +56,14 @@ class GoogleSheetThread(QObject):
             email = row[column_titles[1]]
             chinese_name = row[column_titles[4]]
             english_name = row[column_titles[5]]
+            rotaract_club = row['rotaract_club']
 
             # Create QR data text
-            qr_data = f"unique_id: {unique_id}\n姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
+            qr_data = f"unique_id: {unique_id}\n姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}\n扶青社: {rotaract_club}"
             output_file = f"{index+1}_{english_name}_qrcode.png"
 
             self.generate_qrcode(qr_data, output_file, self.output_dir)
-            self.sheetDumpSig.emit(str(index+1), chinese_name, str(english_name), email)
+            self.sheetDumpSig.emit(str(index+1), chinese_name, str(english_name), email, rotaract_club)
         self.genQRCodeSheetDone.emit()
     
     def get_all_data(self, index):

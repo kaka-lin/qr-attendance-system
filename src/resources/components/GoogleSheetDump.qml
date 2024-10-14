@@ -128,6 +128,23 @@ Rectangle {
             }
         }
 
+        TableViewColumn {
+            id: rotaracColumn
+            title: "所屬扶青社"
+            role: "rotaract_club"
+            movable: false
+            resizable: true
+            width: tableView.viewport.width / 3
+
+            delegate: Text {
+                anchors.verticalCenter: parent.verticalCenter
+                color: "black"
+                elide: styleData.elideMode
+                text: styleData.value
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
         model: listModel
 
         WorkerScript {
@@ -140,8 +157,14 @@ Rectangle {
         target: manage
 
         // Sum signal handler
-        function onSheetDumpSig(id, chinese_name, english_name, email) {
-            var msg = {'id': id, 'chinese_name': chinese_name, 'english_name': english_name, 'email': email, 'model': listModel};
+        function onSheetDumpSig(id, chinese_name, english_name, email, rotaract_club) {
+            var msg = {
+                'id': id, 
+                'chinese_name': chinese_name, 
+                'english_name': english_name, 
+                'email': email,
+                'rotaract_club': rotaract_club,
+                'model': listModel};
             dumpWorker.sendMessage(msg);
         }
 

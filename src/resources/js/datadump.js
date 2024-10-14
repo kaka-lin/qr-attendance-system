@@ -9,7 +9,7 @@ WorkerScript.onMessage = function(msg) {
             'chinese_name': msg.chinese_name, 
             'english_name': msg.english_name, 
             'email': msg.email,
-            'rotaract_clu': msg.rotaract_club
+            'rotaract_club': msg.rotaract_club
         };
         
         msg.model.append(data);

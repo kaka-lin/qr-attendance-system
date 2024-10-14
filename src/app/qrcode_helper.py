@@ -68,17 +68,18 @@ class QRCodeHelper:
 
 
 if __name__ == "__main__":
+    unique_id = str(uuid.uuid4())
     chinese_name = "林家豪"
     english_name = "Kaka"
     email = "vn503024@gmail.com"
-    output_dir = "images"
+    output_dir = "datas"
     output_file = "qrcode.png"
 
-    qr_data = f"姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
+    qr_data = f"unique_id: {unique_id}\n姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}"
 
     # 生成 QR Code
     qrcode_generator = QRCodeHelper()
-    qrcode_generator.generate(qr_data, output_file=output_file)
+    qrcode_generator.generate(qr_data, output_file=output_file, output_dir=output_dir)
 
     # 解碼 QR Code
     # Load the QR code image

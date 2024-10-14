@@ -1,5 +1,7 @@
 # QR Codes Attendance System
 
+![](images/example.png)
+
 ## Usage
 
 1. Install Python packages
@@ -32,7 +34,7 @@ if you want to packing Python programs into stand-alone executables
     - [x] Google Sheet
   - [ ] 使用 GUI 掃描 QRCode
     - [x] 掃描 QRCode 並顯示資料
-    - [ ] QRCode 顯示已經掃過
+    - [x] QRCode 顯示已經掃過
 
 ## Issues
 

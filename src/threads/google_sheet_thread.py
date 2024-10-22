@@ -33,30 +33,30 @@ class GoogleSheetThread(QObject):
         index = 0 if not index else index
         data = self.get_all_data(index)
         
-        # 1. processing data: only need email, chinese_name, english_name, rotaract_club
+        # 1. processing data: only need chinese_name, english_name, email, rotaract_club
         column_titles = data.columns.tolist()
-        item_list = [column_titles[1], column_titles[4], column_titles[5], column_titles[2], column_titles[11]]
+        item_list = [column_titles[1], column_titles[2], column_titles[3], column_titles[4]]
         qr_data_pd = data[item_list].copy()
 
         # 2. Add a unique_id column to the DataFrame
         qr_data_pd.loc[:, 'unique_id'] = [str(uuid.uuid4()) for _ in range(len(qr_data_pd))]
         qr_data_pd.loc[:, 'scanned'] = False
-        qr_data_pd.loc[:, 'rotaract_club'] = qr_data_pd.apply(
-            lambda row: row[column_titles[2]] if row[column_titles[2]] != '其他友社及來賓' else row[column_titles[11]]+"來賓", axis=1)
-        qr_data_pd = qr_data_pd.drop(columns=[column_titles[2], column_titles[11]])
 
         # 3. Save the data to MongoDB
         qr_data_dict = qr_data_pd.to_dict(orient='records')
-        self.db.create_or_update_many(qr_data_dict)
+        # check if the item already exists in the database
+        # chinese_name and email are unique
+        filter_item = [column_titles[1], column_titles[3]]
+        self.db.create_or_update_many(qr_data_dict, filter_item)
 
         # generate qr code and emit signal to update UI
         for index, row in qr_data_pd.iterrows():
             # Use the generated unique_id from the DataFrame
             unique_id = row['unique_id']
-            email = row[column_titles[1]]
-            chinese_name = row[column_titles[4]]
-            english_name = row[column_titles[5]]
-            rotaract_club = row['rotaract_club']
+            email = row[column_titles[3]]
+            chinese_name = row[column_titles[1]]
+            english_name = row[column_titles[2]]
+            rotaract_club = row[column_titles[4]]
 
             # Create QR data text
             qr_data = f"unique_id: {unique_id}\n姓名: {chinese_name}\n英文: {english_name}\n信箱: {email}\n扶青社: {rotaract_club}"

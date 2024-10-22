@@ -45,9 +45,9 @@ class MongoController(QObject):
             self.db = self.client[db_name]
             self.collection = self.db[collection_name]
             print(f"Connected to database: {db_name}, collection: {collection_name}")
-            
+
             # 為指定的 key 創建唯一索引
-            self.collection.create_index([('中文姓名', 1), ('電子郵件地址', 1)], unique=True)
+            self.collection.create_index([('中文姓名', 1), ('信箱', 1)], unique=True)
             print("Index created successfully")
         except OperationFailure as e:
             print(f"Failed to select database or collection: {e}")
@@ -64,7 +64,7 @@ class MongoController(QObject):
         except Exception as e:
             print(f"An error occurred: {e}")
     
-    def create_or_update_many(self, data: List[Dict]):        
+    def create_or_update_many(self, data: List[Dict], filter_item: List[str]):        
         try:
             result = self.collection.insert_many(data, ordered=False)
             print(f"Inserted {len(result.inserted_ids)} documents successfully")
@@ -80,7 +80,7 @@ class MongoController(QObject):
 
                     # 收集要進行批量更新的操作
                     update_operations.append(UpdateMany(
-                        {'中文姓名': duplicate_data['中文姓名'], '電子郵件地址': duplicate_data['電子郵件地址']},
+                        {item: duplicate_data[item] for item in filter_item},
                         {'$set': {'unique_id': duplicate_data['unique_id'], 'scanned': duplicate_data['scanned']}}
                     ))
 

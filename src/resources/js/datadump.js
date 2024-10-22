@@ -1,5 +1,4 @@
 WorkerScript.onMessage = function(msg) {
-    //console.log(JSON.stringify(msg))
     if (Object.keys(msg).length === 1) {
         msg.model.clear();
         msg.model.sync();
@@ -11,7 +10,6 @@ WorkerScript.onMessage = function(msg) {
             'email': msg.email,
             'rotaract_club': msg.rotaract_club
         };
-        
         msg.model.append(data);
         msg.model.sync();
     }

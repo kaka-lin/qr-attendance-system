@@ -66,7 +66,9 @@ class ManageThreads(QObject):
         worker.sheetDumpSig.connect(self.sheetDumpSig)
         worker.genQRCodeSheetDone.connect(self.onGenQRCodeSheetDone)
 
-        thread.started.connect(lambda: worker.generate_code_sheet(0))
+        # generate_code_sheet(index)
+        # index: choose the worksheet index
+        thread.started.connect(lambda: worker.generate_code_sheet(2))
         thread.start()
     
     @pyqtSlot()

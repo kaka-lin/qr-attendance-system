@@ -157,13 +157,15 @@ Rectangle {
         target: manage
 
         // Sum signal handler
-        function onSheetDumpSig(id, chinese_name, english_name, email, rotaract_club) {
+        function onSheetDumpSig(id, chinese_name, english_name, email, rotaract_club, gloup, notes) {
             var msg = {
                 'id': id, 
                 'chinese_name': chinese_name, 
                 'english_name': english_name, 
                 'email': email,
                 'rotaract_club': rotaract_club,
+                'gloup': gloup,
+                'notes': notes,
                 'model': listModel};
             dumpWorker.sendMessage(msg);
         }

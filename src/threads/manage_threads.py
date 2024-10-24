@@ -13,13 +13,13 @@ class ManageThreads(QObject):
     genQRCodeSig = pyqtSignal(str, arguments=['image_path'])
 
     sheetDumpInit = pyqtSignal()
-    sheetDumpSig = pyqtSignal(str, str, str, str, str, arguments=[
-        'id', 'chinese_name', 'english_name', 'email', 'rotaract_club'])
+    sheetDumpSig = pyqtSignal(str, str, str, str, str, str, str, arguments=[
+        'id', 'chinese_name', 'english_name', 'email', 'rotaract_club', 'gloup', 'notes'])
     genQRCodeSheetDone = pyqtSignal()
 
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal()
-    decodeMsgSig = pyqtSignal(bool, str, bool,  arguments=['isDetected', 'qr_data', 'isScanned'])
+    decodeMsgSig = pyqtSignal(bool, str, bool, str, str, arguments=['isDetected', 'qr_data', 'isScanned', 'gloup', 'notes'])
 
     def __init__(self, db, parent=None):
         super(ManageThreads, self).__init__(parent)

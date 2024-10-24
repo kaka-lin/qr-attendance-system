@@ -14,7 +14,7 @@ class VideoThread(QObject):
     frameReady = pyqtSignal(np.ndarray)
     finished = pyqtSignal(str)
 
-    decodeMsgSig = pyqtSignal(bool, str, bool)
+    decodeMsgSig = pyqtSignal(bool, str, bool, str, str)
 
     def __init__(self, camera_port=0, db=None, parent=None):
         super(VideoThread, self).__init__(parent)
@@ -45,7 +45,7 @@ class VideoThread(QObject):
 
             if not ret:
                 print("Can't receive frame (stream end?)")
-                break
+                continue
             
             # convert the frame to RGB
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -78,6 +78,8 @@ class VideoThread(QObject):
             decoded_list = decoded_data.strip().split("\n")
             data_dict = dict(data.split(": ") for data in decoded_list)
             self.query_filter = {'unique_id': data_dict['unique_id']}
+            gloup = data_dict['分組顏色']
+            notes = data_dict['備註']
 
             if self.db:
                 data, isFound = self.db.query(self.query_filter)
@@ -87,9 +89,9 @@ class VideoThread(QObject):
                     else:
                         isScanned = True
    
-            self.decodeMsgSig.emit(isDetected, decoded_data, isScanned)
+            self.decodeMsgSig.emit(isDetected, decoded_data, isScanned, gloup, notes)
         else:
-            self.decodeMsgSig.emit(isDetected, "", isScanned)
+            self.decodeMsgSig.emit(isDetected, "", isScanned, "", "")
     
     def is_new_qr_code(self, decoded_data):
         return decoded_data != self.last_decoded_data

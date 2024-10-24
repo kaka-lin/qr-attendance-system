@@ -10,6 +10,16 @@ Rectangle {
     id: root
     anchors.fill: parent
 
+    // Define a mapping for Chinese color names
+    property var colorMap: ({
+        "紫色": "purple",
+        "藍色": "blue",
+        "綠色": "green",
+        "黃色": "yellow",
+        "橘色": "orange",
+        "紅色": "red",
+    })
+
     Column {
         anchors.fill: parent
         anchors.topMargin: 15
@@ -100,8 +110,9 @@ Rectangle {
 
                 Text {
                     id: decodeStatus
-                    color: "white"
+                    color: "black"
                     text: ""
+                    font.pointSize: 14
 
                     anchors.centerIn: parent
                     anchors.leftMargin: 10
@@ -132,9 +143,12 @@ Rectangle {
     Connections {
         target: manage
 
-        function onDecodeMsgSig(isDetected, qr_data, isScanned) {
+        function onDecodeMsgSig(isDetected, qr_data, isScanned, gloup, notes) {
             if (isDetected) {
                 decodeStatus.text = qr_data;
+                decodeArea.color =  colorMap[gloup];
+                decodeStatus.color = (gloup === "藍色" || gloup === "紫色") ? "white" : "black";
+
                 if (isScanned) {
                     checkInStatus.text = "已報到過";
                     checkInStatus.color = "red";

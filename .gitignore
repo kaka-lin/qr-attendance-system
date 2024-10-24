@@ -21,3 +21,4 @@ src/app/images
 # data
 *.csv
 *.xlsx
+*.zip
